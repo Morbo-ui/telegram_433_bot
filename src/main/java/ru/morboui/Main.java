@@ -20,6 +20,7 @@ public class Main {
         String id;
         String name;
 
+
         public String getId() {
             return id;
         }
@@ -37,7 +38,7 @@ public class Main {
         }
     }
 
-     static class HH {
+    static class HH {
         List<Job> items;
 
         public List<Job> getItems() {
@@ -48,20 +49,23 @@ public class Main {
             this.items = items;
         }
 
-        HH(){}
+        HH() {
+        }
     }
 
     public static void main(String[] args) {
+        System.setProperty("file.encoding", "UTF-8");
 
-        TelegramBot bot = new TelegramBot("2023427152:AAF26px8K0V3KXuL-eBrBM0mYhOHqaWZ_gI");
+
+        TelegramBot bot = new TelegramBot(System.getenv("433_BOT_TOKEN"));
 
         bot.setUpdatesListener(element -> {
-            System.out.println(element);
+            //System.out.println(element);
             element.forEach(it -> {
 
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("https://api.hh.ru/vacancies"))
+                        .uri(URI.create("https://api.hh.ru/vacancies?text=" + it.message().text() + "&area=1"))
                         .build();
 
                 try {
@@ -69,9 +73,10 @@ public class Main {
                     ObjectMapper mapper = new ObjectMapper();
                     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                     String body = response.body();
-                    System.out.println(body);
+                    //System.out.println(body);
                     HH hh = mapper.readValue(response.body(), HH.class);
-                    hh.items.forEach(job -> {
+                    hh.items.subList(0, 5).forEach(job -> {
+                        bot.execute(new SendMessage(it.message().chat().id(), "Vacancy: " + job.name + "\nLink: hh.ru/vacancy/" + job.id));
                         System.out.println(job.id + " " + job.name);
                     });
                     response.body();
@@ -79,7 +84,7 @@ public class Main {
                     e.printStackTrace();
                 }
 
-                bot.execute(new SendMessage(it.message().chat().id(), "Hello"));
+
             });
 
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
