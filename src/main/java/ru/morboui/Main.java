@@ -69,7 +69,6 @@ public class Main {
     df.setTimeZone(tz);
     String nowAsISO = df.format(new Date());
 
-    LocalTime time = LocalTime.parse("12:33");
 
     bot.setUpdatesListener(element -> {
       //System.out.println(element);
@@ -79,7 +78,7 @@ public class Main {
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(
                 "https://api.rasp.yandex.net/v3.0/search/?apikey=" + System.getenv("YANDEX_API_KEY")
-                    + "b7fc68cb&format=json&from=s9739796&to=s9744794&page=1&date=" + nowAsISO
+                    + "&format=json&from=s9739796&to=s9744794&page=1&date=" + nowAsISO
                     + "&levent=departure"))
             .build();
 
